@@ -1,4 +1,5 @@
-<vg-player (onPlayerReady)="onPlayerReady($event)" style="width:50%;height:60%">
+<div class="video-container" *ngIf= "sources !== undefined">
+<vg-player (onPlayerReady)="onPlayerReady($event)" class= "video">
     <div *ngIf="cuePointData?.title" class="info-layer">
         <h3><a [href]="cuePointData?.href" target="_blank">{{ cuePointData?.title }}</a></h3>
         <p>
@@ -14,17 +15,17 @@
             <table class="cue-table">
                 <thead>
                 <tr class="cue-row">
-                    <th>Start Time |</th>
-                    <th>End Time |</th>
-                    <th>JSON |</th>
-                    <th>Actions|</th>
+                    <th>Start Time </th>
+                    <th>End Time </th>
+                    <th>JSON </th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr *ngFor="let cue of track?.cues" class="cue-row">
-                    <td>{{ cue.startTime }} |</td>
-                    <td>{{ cue.endTime }} |</td>
-                    <td>{{ json.parse(cue.text).title }}|</td>
+                    <td>{{ cue.startTime }} </td>
+                    <td>{{ cue.endTime }} </td>
+                    <td>{{ json.parse(cue.text).title }}</td>
                     <td class="actions">
                         <button type="button" (click)="onClickEdit(cue)">EditCue</button>
                         <button type="button" (click)="onClickRemove(cue)">Remove</button>
@@ -71,7 +72,7 @@
         </div>
     </div>
 
-    <vg-overlay-play></vg-overlay-play>
+<!--     <vg-overlay-play></vg-overlay-play> -->
 
     <vg-controls>
         <vg-play-pause></vg-play-pause>
@@ -104,6 +105,6 @@
                (onExitCuePoint)="onExitCuePoint($event)">
     </video>
 </vg-player>
-
+</div>
 
 

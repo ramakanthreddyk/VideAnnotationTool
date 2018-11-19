@@ -93,7 +93,11 @@
     justify-content: center;
 }
 
-/* video {
-  width: 50%;
+.video {
+  width: 60%;
   height: 50%;
-} */
+}
+
+.video-container {
+    padding: 40px;
+}

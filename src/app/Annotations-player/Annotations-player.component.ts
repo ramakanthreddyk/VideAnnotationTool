@@ -111,21 +111,19 @@ export class AnnotationsPlayerComponent implements OnInit {
 
     ngOnInit() {
       this.auth.selectedVideo.subscribe((val: any) => {
-        this.sources = [
-          {
-              src: val.Video_Ref,
-              type: 'video/mp4'
+          if (val.Video_Ref) {
+              this.sources = [
+                  {
+                      src: val.Video_Ref,
+                      type: 'video/mp4'
+                  }
+              ];
           }
-      ];
       });
-
-      this.auth.selectedAnnotation.subscribe((val: any) => {
-        this.annotations = val;
-      });
-
-      this.auth.getUserVideoId.subscribe((val: any) => {
+      this.auth.getUserVideoId.subscribe((val: any) => { console.log(val);
+        if (val.username) {
         this.auth.getPreAnnotations(val).then((res: any) => {
-          console.log(this.track);
+          console.log(res.data);
           /* for (let i = this.track.cues.length; i > 2; i-- ) {
                 this.track.removeCue(this.track.cues[i]);
           } */
@@ -143,6 +141,10 @@ export class AnnotationsPlayerComponent implements OnInit {
             this.track.addCue (new VTTCue ( sampleObject.startTime, sampleObject.endTime, JSON.stringify(sampleObject.jsonText)));
           });
         });
+    }
+      });
+      this.auth.selectedAnnotation.subscribe((val: any) => {
+        this.annotations = val;
       });
     }
 
