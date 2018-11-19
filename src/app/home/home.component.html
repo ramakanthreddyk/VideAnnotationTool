@@ -1,0 +1,20 @@
+
+<ul class="home">
+    <li *ngFor="let data of assets" (click)="gotoVideo(data)">
+        {{ data.Video_Id }}
+        {{ data.Asset }}
+    </li>
+    <hr>
+    <div *ngIf="annotations">
+    <li><b>Id Annotation Description</b> </li>
+    <li *ngFor="let annotation of annotations">
+        {{ annotation.Video_Id  }}-
+        {{ annotation.Annotation }}-
+        {{ annotation.Description }}
+    </li>
+  </div>
+</ul>
+<hr>
+<!-- <div *ngIf= "annotations" style="margin: 30px">
+        <app-annotations-player ></app-annotations-player>
+</div> -->
