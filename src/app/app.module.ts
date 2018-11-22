@@ -12,18 +12,22 @@ import { RegisterComponent } from './register/register.component';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatToolbarModule, MatIconModule, MatMenuModule, MatDividerModule, MatSnackBarModule } from '@angular/material';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 // used to create fake backend
 import { AuthGuard } from './_guards';
 import { AuthenticationService, UserService } from './_services';
+import { SideNavComponent } from './side-nav/side-nav.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         HomeComponent,
         LoginComponent,
-        RegisterComponent
+        RegisterComponent,
+        SideNavComponent
     ],
     imports: [
         BrowserModule,
@@ -32,7 +36,14 @@ import { AuthenticationService, UserService } from './_services';
         HttpClientModule,
         AnnotationsPlayerModule,
         BrowserAnimationsModule,
-        MatSnackBarModule
+        MatToolbarModule,
+        MatIconModule,
+        MatSnackBarModule,
+        MatMenuModule,
+        MatDividerModule,
+        RouterModule,
+        MatSidenavModule,
+        FlexLayoutModule
     ],
     providers: [
         AuthGuard,

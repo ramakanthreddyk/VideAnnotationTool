@@ -1,5 +1,5 @@
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<!-- <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="#">Annotation Tool</a>
@@ -11,5 +11,13 @@
     </ul>
     </div>
   </nav>
-  <br> <br><br><br>
-  <router-outlet></router-outlet>
+  <br> <br><br><br> -->
+
+  <div class="toolbar" fxLayoutGap="20px">
+    <button mat-icon-button (click)="toggleNav()"><mat-icon>menu</mat-icon></button>
+    <span fxFlex="50">VIBROCONTROL</span>
+<div class="logo" fxFlex="50" routerLink="/">
+    <img src="hgh">     
+</div>
+</div>
+<app-side-nav></app-side-nav>

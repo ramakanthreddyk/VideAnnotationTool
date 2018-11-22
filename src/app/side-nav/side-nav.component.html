@@ -1,0 +1,21 @@
+<mat-drawer-container class="sidenav-container" autosize>
+  <mat-drawer class="sidenav" mode="side" [opened]="true">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+      <li routerLink="/home" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon>
+        <span *ngIf="_showFullNav">Dashboard</span>
+      </li>
+      <li routerLink="/home" routerLinkActive="active">
+        <mat-icon>show_chart</mat-icon>
+        <span *ngIf="_showFullNav">Spektren</span>
+      </li>
+      <span fxFlex></span>
+      <li routerLink="/home" routerLinkActive="active">
+        <mat-icon>info</mat-icon>
+        <span *ngIf="_showFullNav">Info</span>
+      </li>
+    </div>
+  </mat-drawer>
+
+</mat-drawer-container>
+<router-outlet></router-outlet>

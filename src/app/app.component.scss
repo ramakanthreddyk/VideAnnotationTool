@@ -1,0 +1,33 @@
+
+.toolbar {
+    background-color: #fff;
+    height: 64px;
+    display: flex;
+    box-sizing: border-box;
+    padding: 0 16px;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    white-space: nowrap;
+    font: 500 20px/32px Roboto, "Helvetica Neue", sans-serif;
+
+
+    margin: 0;
+}
+
+.logo {
+    cursor: pointer;
+
+    &:focus {
+        outline: none;
+    }
+
+    img {
+        max-height: 2em;
+    }
+
+    span {
+        margin-top: 0.1em;
+        font: 400 1.5em "BebasNeue";
+    }
+}
