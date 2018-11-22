@@ -24,6 +24,7 @@
             ],
             "styles": [
               "src/styles.css",
+              "sass/styles.scss",
               "node_modules/videogular2/fonts/videogular.css"
             ],
             "scripts": []
