@@ -26,7 +26,7 @@ export interface IWikiCue {
 @Component({
     selector: 'app-annotations-player',
     templateUrl: './Annotations-player.component.html',
-    styleUrls: ['./Annotations-player.component.css']
+    styleUrls: ['./Annotations-player.component.scss']
 })
 export class AnnotationsPlayerComponent implements OnInit {
     sources: Array<Object>;
