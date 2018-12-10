@@ -1,23 +1,26 @@
 
-<!-- <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
-      <div class="navbar-header">
+<nav class="navbar navbar-inverse nanavbar-fixed-top">
+    <div fxLayout="row" fxLayoutAlign="space-around center" fxFlex >
         <a class="navbar-brand" href="#">Annotation Tool</a>
-      </div>
-      <ul class="nav navbar-nav" routerLinkActive="active">
-        <li class="nav-item"><a class="nav-link" routerLink="home">Home</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="player">Video</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="login">login</a></li>
-    </ul>
+        <span FxFlex="50"></span>
+        <ul class="nav navbar-nav navbar-right">
+            <li *ngIf="logged">
+              <a (click)="logout()">
+                <span class="glyphicon glyphicon-log-out"></span> Logout</a>
+            </li>
+            <li *ngIf="!logged">
+              <a (click)="login()">
+                <span class="glyphicon glyphicon-log-in"></span> Login</a>
+            </li>
+          </ul>
     </div>
   </nav>
-  <br> <br><br><br> -->
 
-  <div class="toolbar" fxLayoutGap="20px">
-    <button mat-icon-button (click)="toggleNav()"><mat-icon>menu</mat-icon></button>
-    <span fxFlex="50">VIBROCONTROL</span>
-<div class="logo" fxFlex="50" routerLink="/">
-    <img src="hgh">     
-</div>
-</div>
-<app-side-nav></app-side-nav>
+  <div class="row">
+    <div class="column left">
+      <app-sidebar></app-sidebar>
+    </div>
+    <div class="column right">
+      <router-outlet></router-outlet>
+    </div>
+  </div>

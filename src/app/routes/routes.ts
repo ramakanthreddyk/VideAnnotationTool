@@ -4,16 +4,26 @@ import { HomeComponent } from '../home/home.component';
 import { LoginComponent } from '../login/login.component';
 import { RegisterComponent } from '../register/register.component';
 import { AnnotationsPlayerComponent } from '../Annotations-player/Annotations-player.component';
+import { UsersComponent } from '../users/users.component';
+import { AssetsComponent } from '../assets/assets.component';
 import { AuthGuard } from '../_guards';
 
 export const ROUTES: Routes = [
     {
-        path: 'home',
+        path: 'Home',
         component: HomeComponent, canActivate: [AuthGuard]
     },
     {
-        path: 'player',
-        component: AnnotationsPlayerComponent
+        path: 'Player',
+        component: AnnotationsPlayerComponent, canActivate: [AuthGuard]
+    },
+    {
+        path: 'Users',
+        component: UsersComponent
+    },
+    {
+        path: 'Assets',
+        component: AssetsComponent, canActivate: [AuthGuard]
     },
     {
         path: 'login',
@@ -25,12 +35,12 @@ export const ROUTES: Routes = [
     },
     {
         path: '',
-        redirectTo: '/home',
+        redirectTo: '/Home',
         pathMatch: 'full'
     },
     {
         path: '**',
-        redirectTo: '/home',
+        redirectTo: '/Home',
         pathMatch: 'full'
     }
 ];

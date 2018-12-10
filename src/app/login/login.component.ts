@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { first } from 'rxjs/operators';
 import {MatSnackBar} from '@angular/material';
-import { AuthenticationService } from '../_services';
-// import {AuthenticationService} from '../authentication.service';
+import { AuthenticationService, UserService } from '../_services';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
@@ -21,8 +19,8 @@ export class LoginComponent implements OnInit {
       private formBuilder: FormBuilder,
       private route: ActivatedRoute,
       private router: Router,
-      // private authenticationService: AuthenticationService,
       private auth: AuthenticationService,
+      private user: UserService,
       private snackBar: MatSnackBar) {}
 
   ngOnInit() {
@@ -45,11 +43,12 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.invalid) {
       this.openSnackBar('Please fill all details', '');
     } else {
-      this.auth.login(this.loginForm.value).then((res: any) => {
-        console.log(res);
+      this.user.login(this.loginForm.value).then((res: any) => {
         if (res.success === true) {
           this.openSnackBar(res.message, '');
-         localStorage.setItem('token', res.username);
+          localStorage.setItem('loggedUser', res.data[0].user_id);
+          localStorage.setItem('loggedUser_name', res.data[0].first_name);
+         this.auth.getLoggedInfomethod(true);
          this.router.navigate(['home']);
         } else {
           this.openSnackBar(res.message, '');

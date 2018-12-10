@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild, HostListener, Input } from '@angular/core';
+import { EditAnnotationComponent } from './../edit-annotation/edit-annotation.component';
+import { User } from './../_models/user';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { VgAPI, VgStates } from 'videogular2/core';
 import { NgForm } from '@angular/forms';
-import {MatSnackBar} from '@angular/material';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
-import { AuthenticationService } from '../_services';
+import { MatSnackBar } from '@angular/material';
+import { AuthenticationService, UserService } from '../_services';
+import {MatDialog } from '@angular/material';
 
 declare var VTTCue;
 export interface ICuePoint {
@@ -26,7 +27,7 @@ export interface IWikiCue {
 @Component({
     selector: 'app-annotations-player',
     templateUrl: './Annotations-player.component.html',
-    styleUrls: ['./Annotations-player.component.scss']
+    styleUrls: ['./Annotations-player.component.css']
 })
 export class AnnotationsPlayerComponent implements OnInit {
     sources: Array<Object>;
@@ -37,9 +38,16 @@ export class AnnotationsPlayerComponent implements OnInit {
     api: VgAPI;
     track: TextTrack;
     showCuePointManager = false;
-    annotations: any;
     selectedAnnotation: any;
     tempAnnotation: any;
+    asset: any;
+    displayedColumns = ['key_type_id', 'key_name', 'key_description', 'key_shortcut'];
+    annotationdisplayColumns = ['user', 'title', 'description', 'vote', 'annotation_from', 'annotation_to', 'edit_icon', 'delete_icon'];
+    dataSource;
+    annotationdataSource;
+    users;
+    /* storedAnnotations;
+    displayStoredAnnotations = [''] */
     newCue: IWikiCue = {
         startTime: 40,
         endTime: 50,
@@ -52,53 +60,57 @@ export class AnnotationsPlayerComponent implements OnInit {
     json: JSON = JSON;
     @ViewChild('media') myVideo: any;
 
-    constructor(private snackBar: MatSnackBar, private route: ActivatedRoute, private auth: AuthenticationService) {
+    constructor(private snackBar: MatSnackBar,
+                private user: UserService,
+                private auth: AuthenticationService,
+                private dialog: MatDialog) {
     }
+
+
 
     @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
         if (this.api.state === 'playing' && event.shiftKey) {
-          const key = event.key.toLowerCase();
+             const key = event.key.toLowerCase();
             if (event.key !== 'Shift') {
                 if (this.action !== key) {
-                this.tempAnnotation = this.annotations.filter(eachAnnotation => {
-                    return key === eachAnnotation.Annotation;
+                this.tempAnnotation = this.dataSource.filter(eachAnnotation => {
+                    return key === eachAnnotation.key_shortcut;
                   });
-
-                  console.log(this.tempAnnotation);
-
                   if (this.tempAnnotation.length !== 0) {
-                    if (key === this.tempAnnotation[0].Annotation) {
+                    if (key === this.tempAnnotation[0].key_shortcut) {
                       this.selectedAnnotation = this.tempAnnotation[0];
                       this.action = key;
                       this.startTime = this.api.currentTime;
-                      this.openSnackBar('started annotation' + ` ${this.tempAnnotation[0].Description}`, '');
+                      this.openSnackBar('started annotation' + ` ${this.tempAnnotation[0].key_description}`, '');
                     }
                   } else {
                     console.log('unknown');
                   }
                 } else {
                     this.endTime = this.api.currentTime;
-                    this.openSnackBar('Ended annotation' + ` ${this.selectedAnnotation.Description}`, '');
+                    this.openSnackBar('Ended annotation' + ` ${this.selectedAnnotation.key_description}`, '');
                     const jsonData = {
                         title: 'Test',
-                        description: this.selectedAnnotation.Description,
+                        description: this.selectedAnnotation.key_description,
                         src: '',
-                        href: ''
+                        href: '',
+                        user: this.selectedAnnotation.user_id
                     };
                     const jsonText = JSON.stringify(jsonData);
-                    const userId = localStorage.getItem('token');
-                    const dbAnnotation = {
-                      startTime: this.startTime,
-                      endTime: this.endTime,
+                    const userid = localStorage.getItem('loggedUser');
+                    const annotation_to_store = {
+                      start_time: this.startTime,
+                      end_time: this.endTime,
                       title: jsonData['title'],
                       description: jsonData['description'],
-                      src: jsonData['src'],
-                      href: jsonData['href'],
-                      id: this.selectedAnnotation.Video_Id,
-                      userId: userId
+                      type_id: this.selectedAnnotation.key_type_id,
+                      asset_id: this.asset.asset_id,
+                      user_id: userid,
+                      annotation_id: new Date().valueOf()
                     };
-                    this.auth.storeAnnotation(dbAnnotation).then(res => {
+                    this.user.storeAnnotation(annotation_to_store).then((res: any) => {
                       console.log(res);
+                      this.annotationdataSource = res.data;
                     });
                     this.track.addCue(
                         new VTTCue(this.startTime, this.endTime, jsonText)
@@ -109,54 +121,119 @@ export class AnnotationsPlayerComponent implements OnInit {
         }
     }
 
+
+
+
+
+
+
+
+
+
+
     ngOnInit() {
-      this.auth.selectedVideo.subscribe((val: any) => {
-          if (val.Video_Ref) {
+      this.auth.selectedVideo.subscribe((asset: any) => {
+          if (asset.asset_object) {
+              this.asset = asset;
               this.sources = [
                   {
-                      src: val.Video_Ref,
+                      src: asset.asset_object,
                       type: 'video/mp4'
                   }
               ];
+
+              /* get annotations to corresponding timeline with help of assset */
+              this.user.getPossibleAnnotations(asset.asset_id).then((annotationlist: any) => {
+                this.dataSource = annotationlist.data;
+              });
+              const userid = localStorage.getItem('loggedUser');
+              this.user.getPreStoredAnnotations(asset.asset_id, userid).then((preannotationlist: any) => {
+                if (preannotationlist.success) {
+                    this.annotationdataSource = preannotationlist.data;
+                        if (preannotationlist.data.length > 0) {
+                           /* this.storedAnnotations = preannotationlist.data; */
+                          preannotationlist.data.forEach(eachObject => {
+                            const sampleObject = {
+                            startTime: eachObject.start_time,
+                            endTime: eachObject.end_time,
+                            jsonText: {
+                              title: eachObject.title,
+                              src: '',
+                              href: '',
+                              description: eachObject.description,
+                              user_name: eachObject.user_id
+                           }
+                       }; console.log(preannotationlist.data);
+                      this.track.addCue (new VTTCue ( sampleObject.startTime, sampleObject.endTime, JSON.stringify(sampleObject.jsonText)));
+                  });
+            }
+        }
+              }, (error) => {
+                  console.log('error :', error);
+              });
+          } else {
+              console.log('no asset');
           }
+
       });
-      this.auth.getUserVideoId.subscribe((val: any) => { console.log(val);
-        if (val.username) {
-        this.auth.getPreAnnotations(val).then((res: any) => {
-          console.log(res.data);
-          /* for (let i = this.track.cues.length; i > 2; i-- ) {
-                this.track.removeCue(this.track.cues[i]);
-          } */
-          res.data.forEach(eachObject => {
-            const sampleObject = {
-              startTime: eachObject.startTime,
-              endTime: eachObject.endTime,
-              jsonText: {
-                title: eachObject.title,
-                src: eachObject.src,
-                href: eachObject.href,
-                description: eachObject.description
-              }
-            };
-            this.track.addCue (new VTTCue ( sampleObject.startTime, sampleObject.endTime, JSON.stringify(sampleObject.jsonText)));
-          });
-        });
+
+      this.user.getAll().subscribe((allusers: any) => {
+        this.users = allusers.data;
+      });
+
     }
-      });
-      this.auth.selectedAnnotation.subscribe((val: any) => {
-        this.annotations = val;
-      });
+
+
+
+
+
+
+    getSelectedUserAnnotations( users) {
+            console.log(users);
     }
+
+
+
 
     onPlayerReady(api: VgAPI) {
         this.api = api;
         this.track = this.api.textTracks[0];
+        console.log(this.track);
         this.api.subscriptions.timeUpdate.subscribe(data => {
         });
 
         this.api.subscriptions.canPlay.subscribe(data => {
         });
     }
+
+
+
+
+    openDialog(element): void {
+        const dialogRef = this.dialog.open(EditAnnotationComponent, {
+          width: '250px',
+          data: element
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          this.annotationdataSource = result;
+        });
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     onSubmit(form: NgForm, event: Event) {
         event.preventDefault();
@@ -176,6 +253,14 @@ export class AnnotationsPlayerComponent implements OnInit {
         }
     }
 
+
+
+
+
+
+
+
+
     onClickRemove(cue: TextTrackCue) {
         this.track.removeCue(cue);
     }
@@ -187,6 +272,17 @@ export class AnnotationsPlayerComponent implements OnInit {
     onExitCuePoint($event) {
         this.cuePointData = null;
     }
+
+
+
+
+
+
+
+
+
+
+
 
 openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {

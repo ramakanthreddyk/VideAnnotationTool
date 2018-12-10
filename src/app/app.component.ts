@@ -1,28 +1,34 @@
 import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
-import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
+import { AuthenticationService } from './_services';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: [ './app.component.scss' ]
+    styleUrls: [ './app.component.css' ]
 })
 export class AppComponent implements OnInit, OnDestroy {
-    readonly showSideNav = new BehaviorSubject<boolean>(false);
-    private _showSideNav = false;
+    private logged: Boolean;
 
-    constructor(private route: ActivatedRoute) {
-
-    }
-
+    constructor(private router: Router, private auth: AuthenticationService) {}
     ngOnInit() {
+        this.auth.getLoggedInfo.subscribe((val) => {
+            this.logged = val;
+        });
+        if (localStorage.getItem('loggedUser')) {
+            // logged in so return true
+            this.auth.getLoggedInfomethod(true);
+        }
     }
-    toggleNav() {
-        this._showSideNav = !this._showSideNav ;
-        this.showSideNav.next(this._showSideNav);
-      }
+    private logout() {
+      // clear localstorage
+        localStorage.clear();
+        this.auth.getLoggedInfomethod(false);
+        this.router.navigate(['login']);
+    }
+    private login() {
+        this.router.navigate(['login']);
+    }
 
-    ngOnDestroy() {
-    }
+    ngOnDestroy() {}
 }
