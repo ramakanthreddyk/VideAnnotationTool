@@ -22,6 +22,7 @@ import {
 })
 export class AnnotationOverlayComponent {
   nextPosition = 0;
+  overlayRef: OverlayRef;
   constructor(public overlay: Overlay, public viewContainerRef: ViewContainerRef) { }
 
   openRotiniPanel() {
@@ -37,15 +38,17 @@ export class AnnotationOverlayComponent {
 
     config.hasBackdrop = true;
 
-    const overlayRef = this.overlay.create(config);
+    this.overlayRef = this.overlay.create(config);
 
-    overlayRef.backdropClick().subscribe(() => {
-      overlayRef.dispose();
+    this.overlayRef.backdropClick().subscribe(() => {
+      this.overlayRef.dispose();
     });
-    overlayRef.attach(new ComponentPortal(RotiniPanel, this.viewContainerRef));
+    this.overlayRef.attach(new ComponentPortal(RotiniPanel, this.viewContainerRef));
   }
 
-
+closeRotiniPanel() {
+  this.overlayRef.dispose();
+}
 
 }
 
