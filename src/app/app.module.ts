@@ -22,6 +22,10 @@ import {MatTableModule} from '@angular/material/table';
 import {MatDialogModule} from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 
+import {OverlayModule} from '@angular/cdk/overlay';
+
+
+
 // used to create fake backend
 import { AuthGuard } from './_guards';
 import { AuthenticationService, UserService } from './_services';
@@ -29,7 +33,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { UsersComponent } from './users/users.component';
 import { AssetsComponent } from './assets/assets.component';
 import { EditAnnotationComponent } from './edit-annotation/edit-annotation.component';
-
+import { AnnotationOverlayComponent, RotiniPanel } from './annotation-overlay/annotation-overlay.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -39,7 +43,9 @@ import { EditAnnotationComponent } from './edit-annotation/edit-annotation.compo
         SidebarComponent,
         UsersComponent,
         AssetsComponent,
-        EditAnnotationComponent
+        EditAnnotationComponent,
+        AnnotationOverlayComponent,
+        RotiniPanel
     ],
     imports: [
         BrowserModule,
@@ -58,12 +64,17 @@ import { EditAnnotationComponent } from './edit-annotation/edit-annotation.compo
         MatDialogModule,
         FormsModule
     ],
+    exports: [
+          // CDK
+    OverlayModule,
+
+    ],
     providers: [
         AuthGuard,
         AuthenticationService,
         UserService
     ],
-    entryComponents: [EditAnnotationComponent],
+    entryComponents: [EditAnnotationComponent,  RotiniPanel],
     bootstrap: [ AppComponent ]
 })
 export class AppModule {
